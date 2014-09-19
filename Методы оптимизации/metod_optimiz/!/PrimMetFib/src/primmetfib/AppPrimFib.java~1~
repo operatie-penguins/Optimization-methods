@@ -1,0 +1,285 @@
+package primmetfib;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.applet.*;
+import javax.swing.*;
+
+public class AppPrimFib extends JApplet {
+  boolean isStandalone = false;
+  JLabel jLabel1 = new JLabel();
+  JButton jButton1 = new JButton();
+  JButton jButton2 = new JButton();
+  JButton jButton3 = new JButton();
+  JLabel jLabel2 = new JLabel();
+  JLabel jLabel3 = new JLabel();
+  GrPanel jPanel1 = new GrPanel();
+  public int sh =1;
+
+  /**Get a parameter value*/
+  public String getParameter(String key, String def) {
+    return isStandalone ? System.getProperty(key, def) :
+      (getParameter(key) != null ? getParameter(key) : def);
+  }
+
+  /**Construct the applet*/
+  public AppPrimFib() {
+  }
+  /**Initialize the applet*/
+  public void init() {
+    try {
+      jbInit();
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
+  /**Component initialization*/
+  private void jbInit() throws Exception {
+    jLabel1.setFont(new java.awt.Font("Dialog", 1, 16));
+    jLabel1.setForeground(new Color(130, 0, 80));
+    jLabel1.setText("Пример");
+    jLabel1.setBounds(new Rectangle(236, 4, 73, 17));
+    this.getContentPane().setBackground(new Color(247, 247, 255));
+    this.setSize(new Dimension(545,500));
+     this.getContentPane().setLayout(null);
+    jButton1.setBackground(new Color(220, 230, 255));
+    jButton1.setFont(new java.awt.Font("Dialog", 1, 12));
+    jButton1.setForeground(new Color(0, 0, 60));
+    jButton1.setText("Следущий шаг");
+    jButton1.setBounds(new Rectangle(44, 467, 128, 23));
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jButton1_actionPerformed(e);
+      }
+    });
+    jButton2.setBackground(new Color(220, 230, 255));
+    jButton2.setFont(new java.awt.Font("Dialog", 1, 12));
+    jButton2.setForeground(new Color(0, 0, 60));
+    jButton2.setText("Обновить");
+    jButton2.setBounds(new Rectangle(222, 466, 94, 23));
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jButton2_actionPerformed(e);
+      }
+    });
+    jButton3.setBackground(new Color(220, 230, 255));
+    jButton3.setFont(new java.awt.Font("Dialog", 1, 12));
+    jButton3.setForeground(new Color(0, 0, 60));
+    jButton3.setText("Предыдущий шаг");
+    jButton3.setBounds(new Rectangle(366, 466, 136, 23));
+    jButton3.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jButton3_actionPerformed(e);
+      }
+    });
+    jLabel2.setText("jLabel2");
+    jLabel2.setBounds(new Rectangle(12, 4, 41, 17));
+    jLabel3.setText("jLabel3");
+    jLabel3.setBounds(new Rectangle(59, 4, 41, 17));
+    jPanel1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+      public void mouseMoved(MouseEvent e) {
+        jPanel1_mouseMoved(e);
+      }
+    });
+    jPanel1.setBounds(new Rectangle(10, 25, 530, 440));
+    jPanel1.setBackground(new Color(247, 247, 255));
+    this.getContentPane().add(jLabel2, null);
+    this.getContentPane().add(jLabel3, null);
+    this.getContentPane().add(jLabel1, null);
+    this.getContentPane().add(jButton1, null);
+    this.getContentPane().add(jButton2, null);
+    this.getContentPane().add(jButton3, null);
+    this.getContentPane().add(jPanel1, null);
+  }
+  /**Get Applet information*/
+  public String getAppletInfo() {
+    return "Applet Information";
+  }
+  /**Get parameter info*/
+  public String[][] getParameterInfo() {
+    return null;
+  }
+
+  //static initializer for setting look & feel
+  static {
+    try {
+      //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    }
+    catch(Exception e) {
+    }
+  }
+   public void Ind_n(Graphics g,String a, String b, int x, int y)
+   {g.setFont(new java.awt.Font("SansSerif", 1, 15));
+    g.drawString(""+a,x,y);
+    g.setFont(new java.awt.Font("SansSerif", 1, 11));
+    g.drawString(""+b+" ",x+a.length()*8,y+4);
+    g.setFont(new java.awt.Font("SansSerif", 1, 14));
+  }
+  public void Ind_n1(Graphics g,String a, String b, int x, int y)
+   {g.setFont(new java.awt.Font("SansSerif", 1, 13));
+    g.drawString(""+a,x,y);
+    g.setFont(new java.awt.Font("SansSerif", 1, 11));
+    g.drawString(""+b+" ",x+a.length()*8,y+4);
+    g.setFont(new java.awt.Font("SansSerif", 1, 14));
+  }
+ public void Ind_v(Graphics g,String a, String b, int x, int y)
+   {g.setFont(new java.awt.Font("SansSerif", 1, 15));
+    g.drawString(""+a,x,y);
+    g.setFont(new java.awt.Font("SansSerif", 1, 11));
+    g.drawString(""+b+"  ",x+a.length()*8,y-4);
+    g.setFont(new java.awt.Font("SansSerif", 1, 14));
+  }
+
+  public double f(double x){
+   return( 2*Math.pow(x,2)-12*x);
+  }
+
+   public int xmin=0,xmax=10,ymin=-18,ymax=2;
+   public int gxmin=23,gxmax=303,gymin=66,gymax=306;
+
+
+  public int XGra( double x ) {
+    double xx;
+    int XG;
+    xx = gxmin+( x - xmin )*( gxmax-gxmin )/( xmax-xmin );
+    if ( xx > 400 ) { XG = 400; }
+    else if ( xx < 0 ) { XG = 0; }
+          else XG = (int)xx;
+    return XG;
+  }
+
+   public int YGra( double y ) {
+   double yy;
+   int YG;
+   yy = gymax-( y - ymin )*( gymax-gymin )/( ymax-ymin );
+   if ( yy > 400 ) { YG = 400; }
+   else if ( yy < 0 ) { YG = 0; }
+         else YG = (int)yy;
+   return YG;}
+
+ class  GrPanel extends JPanel {
+  public void paintComponent(Graphics g) {
+    super.paintComponent(g);
+     int sh =1;
+     g.setColor(new Color(180, 0, 60));
+     g.setFont(new java.awt.Font("SansSerif", 3, 18));
+     g.drawString("   "+sh+". ",10,360 );
+     g.setColor(new Color(180, 0, 80));
+     g.setFont(new java.awt.Font("SansSerif", 3, 13));
+     g.drawString("Задача:  ",5,15);
+     g.drawString("Графическая иллюстрация:                                      Зададим величины:",10,40);
+     g.drawString(" Формулы:  ",343,241);
+     g.drawString("Решение:  ",10,344);
+     g.setColor(new Color(0, 0, 80));
+     g.setFont(new java.awt.Font("SansSerif", 1, 14));
+     g.drawString("Найти минимум функции  f(x) = 2 x  - 12x   методом Фибоначчи",63,15);
+     //g.drawString("Фибоначчи ",115,35);
+     Ind_v(g," ","2",300,12);
+     g.setColor(new Color(255, 255, 255));
+     g.fillRect(2,45,320,280);  g.fillRect(340,45,180,179);g.fillRect(340,245,180,82);g.fillRect(2,347,520,82);
+     g.setColor(new Color(157, 187, 255));
+     g.drawRect(2,45,320,280);  g.drawRect(340,45,180,179);g.drawRect(340,245,180,82);g.drawRect(2,347,520,82);
+  //оси
+     g.setColor(Color.black);
+     g.drawLine(23,48,23,323);
+     g.drawLine(5,90,318,90);
+     g.drawLine(23,48,27,53);
+     g.drawLine(23,48,19,53);
+     g.drawLine(313,86,318,90);
+     g.drawLine(318,90,313,94);
+     g.drawString("f(x)",32,60);
+     g.drawString("x",310,83);
+     g.setFont(new java.awt.Font("SansSerif", 1, 11));
+     g.setColor(Color.darkGray);
+     int i;
+     for(i=1;i<11;i++)
+       {g.drawLine(23+i*28,88,23+i*28,92);
+        g.drawString(Integer.toString(i),(i*28)+21,103);
+       }
+     for(i=-20;i<2;i++)
+     { g.drawLine(21,306+12*i,25,306+12*i);
+      }
+     g.drawString("1",11,81); g.drawString("2",11,69);
+     g.drawString("-13",6,250); g.drawString("-14",6,263);
+     g.drawString("-16",6,286); g.drawString("-17",6,298);
+     g.drawString("-18",6,310);
+     g.setColor(new Color(0, 0,220));
+     g.setFont(new java.awt.Font("SansSerif", 1, 12));
+     g.drawString("f(x) = 2*x  - 12*x ",225,62);
+     g.setFont(new java.awt.Font("SansSerif", 1, 10));
+     g.drawString("2",278,55);
+     int mash_x,mash_y;
+     int x0=23,y0=306,x1=303,y1=66;
+     double x=0;
+     g.setColor(new Color(0, 30, 143));
+     while (x<=6.25){
+       g.drawLine(XGra(x),YGra(f(x)),XGra(x+0.03),YGra(f(x+0.03)));
+       x=x+0.03;
+     }
+
+  //формулы
+     g.setColor(new Color(0, 0, 80));
+     g.setFont(new java.awt.Font("SansSerif", 3, 16));
+     g.drawString("\u2113",350,120);
+     g.setFont(new java.awt.Font("SansSerif", 1, 14));
+     g.drawString("\u03B5",350,155);
+     Ind_n(g,"L"," 0",350,70);
+     g.setFont(new java.awt.Font("SansSerif", 1, 12));
+     g.drawString("= [ 0, 10 ]  -  начальный",370,70);
+     g.drawString("интервал ",450,85);
+     g.drawString(" неопределенности",390,100);
+     g.drawString("= 1 -    допустимая длина",360,120);
+     g.drawString("конечного интервала",380,135);
+     g.drawString("= 0.01 -    константа",360,155);
+     g.drawString(" различимости",420,170);
+     g.drawString("N = 6 -  количество",350,190);
+     g.drawString("вычислений функции",380,205);
+     g.drawString("      =         +               (                   )",352,310);
+     g.drawString("      =         +               (                   )",352,270);
+     Ind_n1(g, "y","k+1",342,270);
+     Ind_n1(g, "a", "k+1",377,270);
+     Ind_n1(g, "F"," N-k-3",415,260);
+     g.drawLine(415,265,449,265);
+     g.drawLine(415,266,449,266);
+     Ind_n1(g, "F"," N-k-1",416,279);
+     Ind_n1(g, "b","k+1",460,270);
+     Ind_n1(g, "a", "k+1",491,270);
+     Ind_n1(g, "z","k+1",342,310);
+     Ind_n1(g, "a", "k+1",377,310);
+     Ind_n1(g, "F"," N-k-2",415,300);
+     g.drawLine(415,305,449,305);
+     g.drawLine(415,306,449,306);
+     Ind_n1(g, "F"," N-k-1",416,319);
+     Ind_n1(g, "b","k+1",460,310);
+     Ind_n1(g, "a", "k+1",491,310);
+     g.drawString("- ",485,267);
+     g.drawString("- ",485,307);
+   }
+  }
+   void jButton1_actionPerformed(ActionEvent e) {
+    sh= sh++;
+    if (sh>15) sh=15;
+    repaint();
+    //Graphics g=jPanel1.getGraphics();
+   // jPanel1.paintComponent(g);
+   }
+
+  void jButton3_actionPerformed(ActionEvent e) {
+    sh --;
+    if (sh < 1) sh=1;
+    repaint();
+  }
+
+  void jButton2_actionPerformed(ActionEvent e) {
+    sh=1;
+    repaint();
+   // Graphics g=jPanel1.getGraphics();
+    //jPanel1.paintComponent(g);
+  }
+
+  void jPanel1_mouseMoved(MouseEvent e) {
+   jLabel2.setText(""+e.getX());jLabel3.setText(""+e.getY());
+  }
+}

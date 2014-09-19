@@ -1,0 +1,1308 @@
+package primmetfib;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.applet.*;
+import javax.swing.*;
+
+public class AppPrimFib extends JApplet {
+  boolean isStandalone = false;
+  JLabel jLabel1 = new JLabel();
+  JButton jButton1 = new JButton();
+  JButton jButton2 = new JButton();
+  JButton jButton3 = new JButton();
+  JLabel jLabel2 = new JLabel();
+  JLabel jLabel3 = new JLabel();
+  GrPanel jPanel1 = new GrPanel();
+  public int sh=1, it=0;
+
+  /**Get a parameter value*/
+  public String getParameter(String key, String def) {
+    return isStandalone ? System.getProperty(key, def) :
+      (getParameter(key) != null ? getParameter(key) : def);
+  }
+
+  /**Construct the applet*/
+  public AppPrimFib() {
+  }
+  /**Initialize the applet*/
+  public void init() {
+    try {
+      jbInit();
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+  }
+  /**Component initialization*/
+  private void jbInit() throws Exception {
+    jLabel1.setFont(new java.awt.Font("Dialog", 1, 16));
+    jLabel1.setForeground(new Color(130, 0, 80));
+    jLabel1.setText("Пример");
+    jLabel1.setBounds(new Rectangle(236, 4, 73, 17));
+    this.getContentPane().setBackground(new Color(247, 247, 255));
+    this.setSize(new Dimension(550,500));
+     this.getContentPane().setLayout(null);
+    jButton1.setBackground(new Color(220, 230, 255));
+    jButton1.setFont(new java.awt.Font("Dialog", 1, 14));
+    jButton1.setForeground(new Color(0, 0, 60));
+    jButton1.setText("<==");
+    jButton1.setBounds(new Rectangle(44, 467, 127, 23));
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jButton1_actionPerformed(e);
+      }
+    });
+    jButton2.setBackground(new Color(220, 230, 255));
+    jButton2.setFont(new java.awt.Font("Dialog", 1, 12));
+    jButton2.setForeground(new Color(0, 0, 60));
+    jButton2.setText("Обновить");
+    jButton2.setBounds(new Rectangle(205, 466, 127, 23));
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jButton2_actionPerformed(e);
+      }
+    });
+    jButton3.setBackground(new Color(220, 230, 255));
+    jButton3.setFont(new java.awt.Font("Dialog", 1, 14));
+    jButton3.setForeground(new Color(0, 0, 60));
+    jButton3.setText("==>");
+    jButton3.setBounds(new Rectangle(366, 466, 127, 23));
+    jButton3.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        jButton3_actionPerformed(e);
+      }
+    });
+   /* jLabel2.setText("jLabel2");
+    jLabel2.setBounds(new Rectangle(12, 4, 41, 17));
+    jLabel3.setText("jLabel3");
+    jLabel3.setBounds(new Rectangle(59, 4, 41, 17));
+    jPanel1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+      public void mouseMoved(MouseEvent e) {
+        jPanel1_mouseMoved(e);
+      }
+    });*/
+    jPanel1.setBounds(new Rectangle(10, 25, 535, 440));
+    jPanel1.setBackground(new Color(247, 247, 255));
+    this.getContentPane().add(jLabel2, null);
+    this.getContentPane().add(jLabel3, null);
+    this.getContentPane().add(jLabel1, null);
+    this.getContentPane().add(jButton1, null);
+    this.getContentPane().add(jButton2, null);
+    this.getContentPane().add(jButton3, null);
+    this.getContentPane().add(jPanel1, null);
+  }
+  /**Get Applet information*/
+  public String getAppletInfo() {
+    return "Applet Information";
+  }
+  /**Get parameter info*/
+  public String[][] getParameterInfo() {
+    return null;
+  }
+
+  //static initializer for setting look & feel
+  static {
+    try {
+      //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    }
+    catch(Exception e) {
+    }
+  }
+   public void paintArrow(Graphics g, double X0,double Y0,double X1,double Y1)
+  {
+   g.drawLine((int)X0,(int)Y0,(int)X1,(int)Y1);
+   double R=Math.sqrt((X1-X0)*(X1-X0)+(Y1-Y0)*(Y1-Y0));
+   double dist=6.0,prm=3.0;
+   double Xp=X1+(X0-X1)*dist/R, Yp=Y1+(Y0-Y1)*dist/R;//!!!!!!!!!!
+   double Xk1=Xp+(Y0-Y1)*prm/R, Yk1=Yp-(X0-X1)*prm/R;//
+   g.drawLine((int)X1,(int)Y1,(int)Xk1,(int)Yk1);
+   Xk1=Xp-(Y0-Y1)*prm/R; Yk1=Yp+(X0-X1)*prm/R;
+   g.drawLine((int)X1,(int)Y1,(int)Xk1,(int)Yk1);
+  }
+   public void Ind_n(Graphics g,String a, String b, int x, int y)
+   {g.setFont(new java.awt.Font("SansSerif", 1, 15));
+    g.drawString(""+a,x,y);
+    g.setFont(new java.awt.Font("SansSerif", 1, 11));
+    g.drawString(""+b+" ",x+a.length()*8,y+4);
+    g.setFont(new java.awt.Font("SansSerif", 1, 14));
+  }
+  public void Ind_n1(Graphics g,String a, String b, int x, int y)
+   {g.setFont(new java.awt.Font("SansSerif", 1, 13));
+    g.drawString(""+a,x,y);
+    g.setFont(new java.awt.Font("SansSerif", 1, 11));
+    g.drawString(""+b+" ",x+a.length()*8,y+4);
+    g.setFont(new java.awt.Font("SansSerif", 1, 14));
+  }
+   public void Ind_n2(Graphics g,String a, String b, int x, int y)
+   {g.setFont(new java.awt.Font("SansSerif", 1, 13));
+    g.drawString(""+a,x,y);
+    g.setFont(new java.awt.Font("SansSerif", 1, 10));
+    g.drawString(""+b+" ",x+a.length()*6,y+4);
+    g.setFont(new java.awt.Font("SansSerif", 1, 14));
+  }
+ public void Ind_v(Graphics g,String a, String b, int x, int y)
+   {g.setFont(new java.awt.Font("SansSerif", 1, 15));
+    g.drawString(""+a,x,y);
+    g.setFont(new java.awt.Font("SansSerif", 1, 11));
+    g.drawString(""+b+"  ",x+a.length()*8,y-4);
+    g.setFont(new java.awt.Font("SansSerif", 1, 14));
+  }
+
+  public double f(double x){
+   return( 2*Math.pow(x,2)-12*x);
+  }
+
+   public int xmin=0,xmax=10,ymin=-18,ymax=2;
+   public int gxmin=23,gxmax=303,gymin=66,gymax=306;
+
+
+  public int XGra( double x ) {
+    double xx;
+    int XG;
+    xx = gxmin+( x - xmin )*( gxmax-gxmin )/( xmax-xmin );
+    if ( xx > 400 ) { XG = 400; }
+    else if ( xx < 0 ) { XG = 0; }
+          else XG = (int)xx;
+    return XG;
+  }
+
+   public int YGra( double y ) {
+   double yy;
+   int YG;
+   yy = gymax-( y - ymin )*( gymax-gymin )/( ymax-ymin );
+   if ( yy > 400 ) { YG = 400; }
+   else if ( yy < 0 ) { YG = 0; }
+         else YG = (int)yy;
+   return YG;}
+
+ class  GrPanel extends JPanel {
+  public void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    g.setColor(new Color(180, 0, 60));
+     g.setFont(new java.awt.Font("SansSerif", 3, 18));
+     g.drawString("   "+sh+". ",0,270 );
+     g.setColor(new Color(180, 0, 80));
+     g.setFont(new java.awt.Font("SansSerif", 3, 13));
+     g.drawString("Задача:  ",5,15);
+     g.drawString("Графическая иллюстрация:                                      Зададим величины:",10,40);
+     g.drawString(" Формулы:  ",343,241);
+     g.drawString("Решение:  ",10,344);
+     g.setColor(new Color(0, 0, 80));
+     g.setFont(new java.awt.Font("SansSerif", 1, 14));
+     g.drawString("Найти минимум функции  f(x) методом Фибоначчи",63,15);
+     //g.drawString("Фибоначчи ",115,35);
+     g.setColor(new Color(255, 255, 255));
+     g.fillRect(2,45,320,280);  g.fillRect(338,45,184,179);g.fillRect(338,245,184,82);g.fillRect(2,347,524,82);
+     g.setColor(new Color(157, 187, 255));
+     g.drawRect(2,45,320,280);  g.drawRect(338,45,184,179);g.drawRect(338,245,184,82);g.drawRect(2,347,524,82);
+  //оси
+    int i,mash_x,mash_y;
+    int x0=30,y0=180,x1=357,y1=20;
+
+   if (sh>=1) {
+     g.setColor(new Color(180, 0, 60));
+    // g.setFont(new java.awt.Font("SansSerif", 3, 18));
+    // g.drawString("   "+sh+". ",0,270 );
+     g.setColor(Color.black);
+     g.drawLine(15,310,300,310);
+     g.drawLine(294,313,300,310);
+     g.drawLine(294,307,300,310);
+     g.drawLine(20,60,20,315);
+     g.drawLine(20,60,17,66);
+     g.drawLine(20,60,23,66);
+     g.setFont(new java.awt.Font("SansSerif", 1, 12));
+     g.drawString("x",300,305);
+     g.drawString("f",25,62);
+     /*g.setColor(Color.black);
+     g.drawLine(23,48,23,323);
+     g.drawLine(5,90,318,90);
+     g.drawLine(23,48,27,53);
+     g.drawLine(23,48,19,53);
+     g.drawLine(313,86,318,90);
+     g.drawLine(318,90,313,94);
+     g.drawString("f(x)",32,60);
+     g.drawString("x",310,83);
+     g.setFont(new java.awt.Font("SansSerif", 1, 11));
+     g.setColor(Color.darkGray);
+     int i;
+     for(i=1;i<11;i++)
+       {g.drawLine(23+i*28,88,23+i*28,92);
+        g.drawString(Integer.toString(i),(i*28)+21,103);
+       }
+     for(i=-20;i<2;i++)
+     { g.drawLine(21,306+12*i,25,306+12*i);
+      }
+     g.drawString("1",11,81); g.drawString("2",11,69);
+     g.drawString("-13",6,250); g.drawString("-14",6,263);
+     g.drawString("-16",6,286); g.drawString("-17",6,298);
+     g.drawString("-18",6,310);
+     g.setColor(new Color(0, 0,220));
+     g.setFont(new java.awt.Font("SansSerif", 1, 12));
+     g.drawString("f(x) = 2*x  - 12*x ",225,310);
+     g.setFont(new java.awt.Font("SansSerif", 1, 10));
+     g.drawString("2",278,303);
+     double x=0;
+     g.setColor(new Color(0, 30, 143));
+     while (x<=6.25){
+       g.drawLine(XGra(x),YGra(f(x)),XGra(x+0.03),YGra(f(x+0.03)));
+       x=x+0.03;*/
+     }
+
+  //формулы
+     g.setColor(new Color(0, 0, 80));
+     g.setFont(new java.awt.Font("SansSerif", 3, 16));
+     //g.drawString("\u2113",350,120);
+     g.setFont(new java.awt.Font("SansSerif", 1, 14));
+     g.drawString("\u03B5",350,155);
+     Ind_n(g,"L"," 0",350,70);
+     g.setFont(new java.awt.Font("SansSerif", 1, 12));
+     g.drawString("  -   начальный",370,70);
+     g.drawString("интервал ",420,85);
+     g.drawString(" неопределенности",392,100);
+     g.drawString("\u2113   -  допустимая длина",350,120);
+     g.drawString("конечного интервала",382,135);
+     g.drawString("\u03B5   -   константа",350,155);
+     g.drawString(" различимости",419,170);
+     g.drawString("N -  количество",350,190);
+     g.drawString("вычислений функции",380,205);
+     g.drawString("      =         +               (                   )",352,310);
+     g.drawString("      =         +               (                   )",352,270);
+     Ind_n1(g, "y","k+1",342,270);
+     Ind_n1(g, "a", "k+1",377,270);
+     Ind_n1(g, "F"," N-k-3",415,260);
+     g.drawLine(415,265,449,265);
+     g.drawLine(415,266,449,266);
+     Ind_n1(g, "F"," N-k-1",416,279);
+     Ind_n1(g, "b","k+1",460,270);
+     Ind_n1(g, "a", "k+1",491,270);
+     Ind_n1(g, "z","k+1",342,310);
+     Ind_n1(g, "a", "k+1",377,310);
+     Ind_n1(g, "F"," N-k-2",415,300);
+     g.drawLine(415,305,449,305);
+     g.drawLine(415,306,449,306);
+     Ind_n1(g, "F"," N-k-1",416,319);
+     Ind_n1(g, "b","k+1",460,310);
+     Ind_n1(g, "a", "k+1",491,310);
+     g.drawString("- ",485,267);
+     g.drawString("- ",485,307);
+
+     g.setColor(Color.red);
+     g.setFont(new java.awt.Font("SansSerif", 3, 16));
+     g.drawString(""+sh+". ",25, 365);
+     g.drawString(""+it+". ",12, 365);
+
+     if (((sh==5)&& (it==0)) || ((sh==5)&&(it==1))){
+      g.setFont(new java.awt.Font("SansSerif", 1, 12));
+      g.setColor(Color.red);
+     // paintArrow(g,324,251,338,265);
+
+            g.drawLine(324,241,343,260);
+            g.drawLine(324,242,343,261);
+            ///-----1------
+            g.drawLine(334,261,343,261);
+            g.drawLine(336,260,343,260);
+            g.drawLine(338,259,343,259);
+            ///-----2------
+            g.drawLine(343,251,343,261);
+            g.drawLine(342,253,342,261);
+            g.drawLine(341,256,341,261);
+      g.drawString("      =         +               (                   )",352,270);
+      Ind_n1(g, "y","k+1",342,270);
+      Ind_n1(g, "a", "k+1",377,270);
+      Ind_n1(g, "F"," N-k-3",415,260);
+      g.drawLine(415,265,449,265);
+      g.drawLine(415,266,449,266);
+      Ind_n1(g, "F"," N-k-1",416,279);
+      Ind_n1(g, "b","k+1",460,270);
+      Ind_n1(g, "a", "k+1",491,270);
+      g.drawString("- ",485,267);
+}
+    if (((sh==5)&&(it==2)) || ((sh==5)&&(it==3))){
+       g.setFont(new java.awt.Font("SansSerif", 1, 12));
+       g.setColor(Color.red);
+       //paintArrow(g,324,291,338,305);
+            g.drawLine(324,281,343,300);
+            g.drawLine(324,282,343,301);
+            ///-----1------
+            g.drawLine(334,301,343,301);
+            g.drawLine(336,300,343,300);
+            g.drawLine(338,299,343,299);
+            ///-----2------
+            g.drawLine(343,291,343,301);
+            g.drawLine(342,293,342,301);
+            g.drawLine(341,296,341,301);
+       g.drawString("      =         +               (                   )",352,310);
+       Ind_n1(g, "z","k+1",342,310);
+       Ind_n1(g, "a", "k+1",377,310);
+       Ind_n1(g, "F"," N-k-2",415,300);
+       g.drawLine(415,305,449,305);
+       g.drawLine(415,306,449,306);
+       Ind_n1(g, "F"," N-k-1",416,319);
+       Ind_n1(g, "b","k+1",460,310);
+       Ind_n1(g, "a", "k+1",491,310);
+       g.drawString("- ",485,307);
+      }
+
+     if ((sh==1)&&(it==0)){
+     g.setColor(new Color(0, 30, 143));
+    mash_x=(int)((x1-x0)/10);
+    mash_y=(int)(y0-y1+20)/80;
+    for (i=0;i<x1;i++)
+       g.drawLine(x0+i,(int)(y0-f(i*1.0/mash_x)*mash_y),x0+i,(int)(y0-f((i+1)*1.0/mash_x)*mash_y));
+    g.setColor(Color.gray);
+    for (i=0;i<=2;i++)
+     g.drawLine(30,153+i*14,30,161+i*14);
+    for (i=0;i<=1;i++)
+     g.drawLine(330,2+i*14,330,10+i*14);
+    //}
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(Color.red);
+      g.drawLine(24,310,290,310);
+     // g.drawString("a",16,235);
+      Ind_n1(g, "a","0",25,300);
+      Ind_n1(g, "b","0",288,300);
+      g.drawString("]",289,314);
+      g.drawString("[",23,314);
+            g.drawLine(326,41,345,60);
+            g.drawLine(326,42,345,61);
+            ///-----1------
+            g.drawLine(336,61,345,61);
+            g.drawLine(338,60,345,60);
+            g.drawLine(340,59,345,59);
+            ///-----2------
+            g.drawLine(345,51,345,61);
+            g.drawLine(344,53,344,61);
+            g.drawLine(343,56,343,61);
+     // paintArrow(g,324,51,338,65);
+     /* Ind_n(g,"L"," 0",350,70);
+      g.setFont(new java.awt.Font("SansSerif", 1, 12));
+      g.drawString("= [ 0, 10 ]",370,70);
+      g.drawString("= 1",360,120);
+      g.drawString("= 0,01",360,155);
+      g.drawString("N",350,190);
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString("\u03B5",350,155);
+      g.setFont(new java.awt.Font("SansSerif", 3, 16));
+      g.drawString("\u2113",350,120);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",15,102);
+      g.drawString("10",301,103);*/
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif",3, 16));
+      g.drawString("\u2113 ",360,365);
+      g.drawString("\u2113 ",106,403);
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Зададим начальные данные:        = [ 0, 10 ] ,     = 1,     = 0,01",40,365);
+      Ind_n(g, "L"," 0",265,365);
+      g.drawString("\u03B5 ",410,365);
+      Ind_n(g, "F"," 6",35,390);
+      Ind_n(g, "L"," 0",103,381);
+      g.drawString("10",144,382);
+      g.drawString("1",147,400);
+      g.drawString(" = 13 >         =       = 10,  поэтому  N = 6",50,390);
+      g.drawLine(100,386,120,386);
+      g.drawLine(100,387,120,387);
+      g.drawLine(100,372,100,384);
+      g.drawLine(121,372,121,384);
+      g.drawLine(142,386,158,386);
+      g.drawLine(142,385,158,385);
+     }
+      if ((sh==2)&&(it==0)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(180, 0, 60));
+      g.drawLine(23,89,303,89);
+     // g.drawString("a",16,235);
+     // g.drawString("b",334,235);
+      g.drawString("]",302,94);
+      g.drawString("[",23,94);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",15,102);
+      g.drawString("10",301,103);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Найдем числа Фибоначчи:       =     = 1,        = 2,        = 3,        = 5, ",40,365);
+      Ind_n(g, "F"," 0",245,365);
+      Ind_n(g, "F"," 1",272,365);
+      Ind_n(g, "F"," 2",325,365);
+      Ind_n(g, "F"," 3",385,365);
+      Ind_n(g, "F"," 4",440,365);
+      g.drawString("   = 8,         = 13",40,385);
+      Ind_n(g, "F"," 5",35,385);
+      Ind_n(g, "F"," 6",93,385);
+     }
+      if ((sh==3)&&(it==0)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(180, 0, 60));
+      g.drawLine(23,89,303,89);
+     // g.drawString("a",16,235);
+     // g.drawString("b",334,235);
+      g.drawString("]",302,94);
+      g.drawString("[",23,94);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",15,102);
+      g.drawString("10",301,103);
+       g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString("y",131,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.fillOval(128,88,5,5);
+      for (i=0;i<=14;i++)
+        g.drawLine(130,95+i*13,130,104+i*13);
+      g.drawString("0",138,86);
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.setColor(new Color(170, 0, 183));
+      g.drawString("z",198,84);
+      for (i=0;i<=1;i++)
+        g.drawLine(194,70+i*12,194,75+i*12);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.drawString("0",204,87);
+      g.fillOval(192,88,5,5);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Положим k = 0. ",40,365);
+      g.drawString(" Вычислим       =     +       (     -     ) = 0  +     * 10 = 3,846 ",40,385);
+      Ind_n(g, "y"," 0",130,385);
+      Ind_n(g, "a", "0",160,385);
+      Ind_n(g, "F"," 4",193,375);
+      g.drawLine(189,380,209,380);
+      g.drawLine(189,381,209,381);
+      Ind_n(g, "F"," 6",193,394);
+      g.drawString("5",315,377);
+      g.drawLine(312,380,323,380);
+      g.drawLine(312,381,323,381);
+      g.drawString("13",310,394);
+      Ind_n(g, "b"," 0",218,385);
+      Ind_n(g, "a", "0",245,385);
+      g.drawString("     =     +       (     -     ) = 0 +      * 10 = 6,154 ",60,410);
+      Ind_n(g, "z"," 0",63,410);
+      Ind_n(g, "a", "0",92,410);
+      Ind_n(g, "F"," 5",122,401);
+      g.drawLine(120,404,133,404);
+      g.drawLine(120,405,133,405);
+      Ind_n(g, "F"," 6",122,418);
+      Ind_n(g, "b"," 0",150,410);
+      Ind_n(g, "a", "0",178,410);
+      g.drawString("8",245,403);
+      g.drawLine(243,404,254,404);
+      g.drawLine(243,405,254,405);
+      g.drawString("13",240,418);
+     }
+      if ((sh==4)&&(it==0)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(180, 0, 60));
+      g.drawLine(23,89,303,89);
+      g.drawString("]",302,94);
+      g.drawString("[",23,94);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",15,102);
+      g.drawString("10",301,103);
+       g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.drawString("f(y  )",28,282);
+      for (i=0;i<=7;i++)
+        g.drawLine(25+i*14,288,32+i*14,288);
+      g.fillOval(128,286,5,5);
+      g.fillOval(21,286,5,5);
+      g.drawString("y",131,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.fillOval(128,88,5,5);
+      for (i=0;i<=14;i++)
+        g.drawLine(130,95+i*13,130,104+i*13);
+      g.drawString("0",138,86);
+      g.drawString("0",44,283);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.drawString("f(z  )",28,83);
+      for (i=0;i<=11;i++)
+        g.drawLine(25+i*14,70,32+i*14,70);
+      g.drawString("z",198,85);
+      for (i=0;i<=1;i++)
+        g.drawLine(194,70+i*12,194,75+i*12);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.drawString("0",204,88);
+      g.drawString("0",44,86);
+      g.fillOval(192,88,5,5);
+      g.fillOval(21,68,5,5);
+      g.fillOval(192,69,5,5);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Вычислим    f(     ) = -16,57;   f(     ) = 1,893 ",40,365);
+      Ind_n(g, "y","0",150,365);
+      Ind_n(g, "z", "0",257,365);
+      }
+    if ((sh==5)&&(it==0)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(Color.red);
+      g.drawLine(23,89,194,89);
+      g.drawString("]",193,94);
+      g.drawString("[",23,94);
+      Ind_n1(g, "a","1",8,102);
+      Ind_n1(g, "b","1",198,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",30,103);
+      //g.drawString("10",301,103);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.drawString("f(y  )",28,282);
+      for (i=0;i<=7;i++)
+        g.drawLine(25+i*14,288,32+i*14,288);
+      g.fillOval(128,286,5,5);
+      g.fillOval(21,286,5,5);
+      g.drawString("y",153,83);
+      Ind_n1(g, "y","1",90,83);
+       for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.fillOval(128,88,5,5);
+      g.fillOval(85,88,5,5);
+      for (i=0;i<=14;i++)
+        g.drawLine(130,93+i*13,130,102+i*13);
+      g.drawString("0",160,86);
+      g.drawString("0",44,283);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.drawString("f(z  )",28,83);
+      for (i=0;i<=11;i++)
+        g.drawLine(25+i*14,70,32+i*14,70);
+      g.drawString("z",220,83);
+      Ind_n1(g, "z","1",131,83);
+      for (i=0;i<=1;i++)
+        g.drawLine(194,70+i*12,194,75+i*12);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.drawString("0",227,87);
+      g.drawString("0",44,86);
+      g.fillOval(192,88,5,5);
+      g.fillOval(21,68,5,5);
+      g.fillOval(192,69,5,5);
+      g.setColor(Color.black);
+      g.setFont(new java.awt.Font("SansSerif", 1, 12));
+      //g.drawString("=",17,102);
+      g.drawString("=",145,83);
+      g.drawString("=",212,83);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+       g.drawString(" Сравним   f(    )  c  f(    ) : ",40,365);
+      Ind_n(g, "y","0",132,365);
+      Ind_n(g, "z","0",187,365);
+      g.drawString("  f(    ) < f(    ),  положим         =    = 0 ,       =     = 6,154,       =     = 3,846, ",30,385);
+      Ind_n(g, "y","0",50,385);
+      Ind_n(g, "z","0",98,385);
+      Ind_n(g, "a","1",211,385);
+      Ind_n(g, "a","0",238,385);
+      Ind_n(g, "b","1",293,385);
+      Ind_n(g, "z","0",321,385);
+      Ind_n(g, "y","0",427,385);
+      Ind_n(g, "z","1",400,385);
+      g.drawString("     =     +         (     -     ) = 0 +      * 6,154 = 2,308 ",30,410);
+      Ind_n(g, "y","1",36,410);
+      Ind_n(g, "a", "1",62,410);
+      Ind_n(g, "F"," 6-3",95,400);
+      g.drawLine(93,404,105,404);
+      g.drawLine(93,405,105,405);
+      Ind_n(g, "F"," 6-1",95,418);
+      Ind_n(g, "b"," 1",128,410);
+      Ind_n(g, "a", "1",156,410);
+      g.drawString("3",220,403);
+      g.drawLine(218,404,229,404);
+      g.drawLine(218,405,229,405);
+      g.drawString("8",220,418);
+     }
+     if ((sh==6)&&(it==0)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(Color.red);
+      g.drawLine(23,89,194,89);
+      g.drawString("]",193,94);
+      g.drawString("[",23,94);
+      Ind_n1(g, "a","1",29,83);
+      Ind_n1(g, "b","1",198,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",30,103);
+      //g.drawString("10",301,103);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      Ind_n1(g, "y","1",90,83);
+       for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.fillOval(85,88,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      Ind_n1(g, "z","1",131,83);
+      for (i=0;i<=14;i++)
+        g.drawLine(130,95+i*13,130,104+i*13);
+      g.fillOval(128,88,5,5);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Проверим условие окончания     k     N - 3 = 6 - 3 = 3   и  ",40,365);
+      Ind_n(g, "L"," 2",30,385);
+      //Ind_n(g, "b"," 1",304,270);
+     // Ind_n(g, "a"," 1",333,270);
+      g.drawString(" = [ 0 ; 6,154 ] ",43,385);
+      g.drawString("\u2260 ",294,365);
+     }
+     if ((sh==3)&&(it==1)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(180, 0, 60));
+      g.drawLine(23,89,194,89);
+      g.drawString("]",193,94);
+      g.drawString("[",23,94);
+      Ind_n1(g, "a","1",29,83);
+      Ind_n1(g, "b","1",198,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",30,103);
+      //g.drawString("10",301,103);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      Ind_n1(g, "y","1",90,83);
+       for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.fillOval(85,88,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      Ind_n1(g, "z","1",131,83);
+      for (i=0;i<=14;i++)
+        g.drawLine(130,95+i*13,130,104+i*13);
+      g.fillOval(128,88,5,5);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Положим    k = k + 1  = 1  ",40,365);
+   }
+      if ((sh==4)&&(it==1)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(180, 0, 60));
+      g.drawLine(23,89,194,89);
+      g.drawString("]",193,94);
+      g.drawString("[",23,94);
+      Ind_n1(g, "a","1",29,83);
+      Ind_n1(g, "b","1",198,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",30,103);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.drawString("f(    )",28,310);
+      for (i=0;i<=4;i++)
+        g.drawLine(25+i*14,295,32+i*14,295);
+      Ind_n1(g, "y","1",90,83);
+      Ind_n1(g, "y","1",37,310);
+       for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.fillOval(85,88,5,5);
+      g.fillOval(85,293,5,5);
+      g.fillOval(21,293,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.drawString("f(    )",28,282);
+      for (i=0;i<=7;i++)
+        g.drawLine(25+i*14,288,32+i*14,288);
+      g.fillOval(128,286,5,5);
+      g.fillOval(21,286,5,5);
+      Ind_n1(g, "z","1",37,282);
+      Ind_n1(g, "z","1",131,83);
+      for (i=0;i<=14;i++)
+        g.drawLine(130,95+i*13,130,104+i*13);
+      g.fillOval(128,88,5,5);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Вычислим    f(     ) = -17,04;    f(     ) = -16,57  (было найдено ранее)",40,365);
+      Ind_n(g, "y","1",150,365);
+      Ind_n(g, "z", "1",260,365);
+
+     }
+     if ((sh==5)&&(it==1)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(Color.red);
+      g.drawLine(23,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",23,94);
+      Ind_n1(g, "a","2",29,83);
+      Ind_n1(g, "b","2",132,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",30,103);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.drawString("f(    )",28,310);
+      for (i=0;i<=4;i++)
+        g.drawLine(25+i*14,295,32+i*14,295);
+      Ind_n1(g, "y","2",67,83);
+        for (i=0;i<=12;i++)
+        g.drawLine(65,89+i*13,65,98+i*13);
+      Ind_n1(g, "y","1",112,83);
+      Ind_n1(g, "y","1",37,310);
+       for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.fillOval(85,88,5,5);
+      g.fillOval(63,88,5,5);
+      g.fillOval(85,293,5,5);
+      g.fillOval(21,293,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.drawString("f(    )",28,282);
+      for (i=0;i<=7;i++)
+        g.drawLine(25+i*14,288,32+i*14,288);
+      g.fillOval(128,286,5,5);
+      g.fillOval(21,286,5,5);
+      Ind_n1(g, "z","1",37,282);
+      Ind_n1(g, "z","1",154,83);
+      Ind_n1(g, "z","2",88,83);
+      for (i=0;i<=14;i++)
+        g.drawLine(130,95+i*13,130,104+i*13);
+      g.setColor(Color.black);
+      g.setFont(new java.awt.Font("SansSerif", 1, 12));
+      //g.drawString("=",17,102);
+      g.drawString("=",145,83);
+      g.drawString("=",104,83);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Сравним   f(    )  c  f(    ) : ",40,365);
+      Ind_n(g, "y","1",132,365);
+      Ind_n(g, "z","1",187,365);
+      g.drawString("  f(    ) < f(    ),  положим         =    = 0 ,       =     = 3,846,       =     = 2,308, ",30,385);
+      Ind_n(g, "y","1",50,385);
+      Ind_n(g, "z","1",98,385);
+      Ind_n(g, "a","2",211,385);
+      Ind_n(g, "a","1",238,385);
+      Ind_n(g, "b","2",293,385);
+      Ind_n(g, "z","1",321,385);
+      Ind_n(g, "y","1",427,385);
+      Ind_n(g, "z","2",400,385);
+      g.drawString("     =     +         (     -     ) = 0 +      * 3,846 = 1,538 ",30,410);
+      Ind_n(g, "y","2",36,410);
+      Ind_n(g, "a", "2",62,410);
+      Ind_n(g, "F"," 6-4",95,400);
+      g.drawLine(93,404,105,404);
+      g.drawLine(93,405,105,405);
+      Ind_n(g, "F"," 6-2",95,418);
+      Ind_n(g, "b"," 2",128,410);
+      Ind_n(g, "a", "2",156,410);
+      g.drawString("2",220,403);
+      g.drawLine(218,404,229,404);
+      g.drawLine(218,405,229,405);
+      g.drawString("5",220,418);
+     }
+
+    if ((sh==6)&&(it==1)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(Color.red);
+      g.drawLine(23,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",23,94);
+      Ind_n1(g, "a","2",29,83);
+      Ind_n1(g, "b","2",132,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",30,103);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      Ind_n1(g, "y","2",67,83);
+        for (i=0;i<=12;i++)
+        g.drawLine(65,89+i*13,65,98+i*13);
+      g.fillOval(63,88,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(85,88,5,5);
+      Ind_n1(g, "z","2",88,83);
+      for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Проверим условие окончания     k = 1     N - 3 = 3   и  ",40,365);
+      Ind_n(g, "L"," 3",30,385);
+      g.drawString(" = [ 0 ; 3,846 ]",43,385);
+      g.drawString("\u2260 ",317,365);
+      }
+       if ((sh==3)&&(it==2)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(180, 0, 60));
+      g.drawLine(23,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",23,94);
+      Ind_n1(g, "a","2",29,83);
+      Ind_n1(g, "b","2",132,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",30,103);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      Ind_n1(g, "y","2",67,83);
+        for (i=0;i<=12;i++)
+        g.drawLine(65,89+i*13,65,98+i*13);
+      g.fillOval(63,88,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(85,88,5,5);
+      Ind_n1(g, "z","2",88,83);
+      for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Положим   k = k + 1  = 2 ",40,365);
+     }
+      if ((sh==4)&&(it==2)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(180, 0, 60));
+      g.drawLine(23,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",23,94);
+      Ind_n1(g, "a","2",29,83);
+      Ind_n1(g, "b","2",132,83);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("0",30,103);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.drawString("f(    )",28,268);
+      for (i=0;i<=2;i++)
+        g.drawLine(25+i*14,254,32+i*14,254);
+      Ind_n1(g, "y","2",36,268);
+      Ind_n1(g, "y","2",67,83);
+        for (i=0;i<=12;i++)
+        g.drawLine(65,89+i*13,65,98+i*13);
+      g.fillOval(63,88,5,5);
+      g.fillOval(63,252,5,5);
+      g.fillOval(21,252,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(85,88,5,5);
+      g.drawString("f(    )",28,310);
+      for (i=0;i<=4;i++)
+        g.drawLine(25+i*14,295,32+i*14,295);
+      Ind_n1(g, "z","2",88,83);
+      Ind_n1(g, "z","2",36,310);
+      for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.fillOval(85,293,5,5);
+      g.fillOval(21,293,5,5);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Вычислим    f(     ) = -13,73;    f(     ) = -17,04  (было найдено ранее)",40,365);
+      Ind_n(g, "y","2",150,365);
+      Ind_n(g, "z", "2",260,365);
+      }
+       if ((sh==5)&&(it==2)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(Color.red);
+      g.drawLine(65,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",64,94);
+      Ind_n1(g, "a","3",32,83);
+      Ind_n1(g, "b","3",132,83);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.drawString("f(    )",28,268);
+      for (i=0;i<=2;i++)
+        g.drawLine(25+i*14,254,32+i*14,254);
+      Ind_n1(g, "y","2",37,268);
+      Ind_n1(g, "y","3",74,83);
+      Ind_n1(g, "y","2",52,83);
+        for (i=0;i<=12;i++)
+        g.drawLine(65,89+i*13,65,98+i*13);
+      g.fillOval(63,252,5,5);
+      g.fillOval(21,252,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(85,88,5,5);
+      g.fillOval(107,88,5,5);
+      g.drawString("f(    )",28,310);
+      for (i=0;i<=4;i++)
+        g.drawLine(25+i*14,295,32+i*14,295);
+      Ind_n1(g, "z","3",111,83);
+       for (i=0;i<=16;i++)
+        g.drawLine(109,89+i*13,109,98+i*13);
+      Ind_n1(g, "z","2",92,83);
+      Ind_n1(g, "z","2",36,310);
+      for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.fillOval(85,293,5,5);
+      g.fillOval(21,293,5,5);
+      g.setColor(Color.black);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("=",46,83);
+      g.drawString("=",86,83);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Сравним   f(    )  c  f(    ) : ",40,365);
+      Ind_n(g, "y","2",132,365);
+      Ind_n(g, "z","2",187,365);
+      g.drawString("  f(    ) > f(    ),  положим         =    = 1,538,       =     = 3,846,       =     = 2,308, ",30,385);
+      Ind_n(g, "y","2",50,385);
+      Ind_n(g, "z","2",98,385);
+      Ind_n(g, "a","3",211,385);
+      Ind_n(g, "y","2",238,385);
+      Ind_n(g, "b","3",318,385);
+      Ind_n(g, "b","2",347,385);
+      Ind_n(g, "z","2",454,385);
+      Ind_n(g, "y","3",428,385);
+      g.drawString("     =     +         (     -     ) = 1,538 +      * (3,846 - 1,538) = 3,077 ",30,410);
+      Ind_n(g, "z","3",36,410);
+      Ind_n(g, "a", "3",62,410);
+      Ind_n(g, "F"," 6-4",95,400);
+      g.drawLine(93,404,105,404);
+      g.drawLine(93,405,105,405);
+      Ind_n(g, "F"," 6-3",95,418);
+      Ind_n(g, "b"," 3",128,410);
+      Ind_n(g, "a", "3",156,410);
+      g.drawString("2",250,403);
+      g.drawLine(248,404,259,404);
+      g.drawLine(248,405,259,405);
+      g.drawString("3",250,418);
+      }
+       if ((sh==6)&&(it==2)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(Color.red);
+      g.drawLine(65,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",64,94);
+      Ind_n1(g, "a","3",56,83);
+      Ind_n1(g, "b","3",132,83);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      Ind_n1(g, "y","3",78,83);
+       for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.fillOval(85,88,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(107,88,5,5);
+      Ind_n1(g, "z","3",108,83);
+       for (i=0;i<=16;i++)
+        g.drawLine(109,89+i*13,109,98+i*13);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Проверим условие окончания     k = 2     N - 3 = 3   и  ",40,365);
+      Ind_n(g, "L"," 4",30,385);
+      g.drawString(" = [ 1,538 ; 3,846 ]  ",43,385);
+      g.drawString("\u2260 ",317,365);
+      }
+       if ((sh==3)&&(it==3)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(180, 0, 60));
+      g.drawLine(65,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",64,94);
+      Ind_n1(g, "a","3",56,83);
+      Ind_n1(g, "b","3",132,83);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      Ind_n1(g, "y","3",78,83);
+       for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.fillOval(85,88,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(107,88,5,5);
+      Ind_n1(g, "z","3",108,83);
+       for (i=0;i<=16;i++)
+        g.drawLine(109,89+i*13,109,98+i*13);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Положим   k = k + 1  = 3 ",40,365);
+      }
+
+    if ((sh==4)&&(it==3)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(180, 0, 60));
+      g.drawLine(65,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",64,94);
+      Ind_n1(g, "a","3",56,83);
+      Ind_n1(g, "b","3",132,83);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.drawString("f(    )",28,290);
+      for (i=0;i<=4;i++)
+        g.drawLine(25+i*14,295,32+i*14,295);
+      Ind_n1(g, "y","3",37,290);
+      Ind_n1(g, "y","3",78,83);
+       for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+      g.fillOval(85,88,5,5);
+      g.fillOval(85,293,5,5);
+      g.fillOval(21,293,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(107,88,5,5);
+      g.fillOval(107,303,5,5);
+      g.fillOval(21,302,5,5);
+      g.drawString("f(    )",28,317);
+      for (i=0;i<=5;i++)
+        g.drawLine(25+i*14,305,32+i*14,305);
+      Ind_n1(g, "z","3",37,317);
+      Ind_n1(g, "z","3",108,83);
+       for (i=0;i<=16;i++)
+        g.drawLine(109,89+i*13,109,98+i*13);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Вычислим    f(     ) = -17,9884;    f(    ) = -17,04  (было найдено ранее)",40,365);
+      Ind_n(g, "z","3",150,365);
+      Ind_n(g, "y", "3",275,365);
+      }
+  if ((sh==5)&&(it==3)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+       g.setColor(Color.red);
+      g.drawLine(86,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",86,94);
+      Ind_n1(g, "a","4",50,83);
+      Ind_n1(g, "b","4",132,83);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.drawString("f(    )",28,290);
+      for (i=0;i<=4;i++)
+        g.drawLine(25+i*14,295,32+i*14,295);
+      Ind_n1(g, "y","3",37,290);
+      Ind_n2(g, "y","4",90,83);
+      Ind_n2(g, "y","3",71,83);
+       for (i=0;i<=15;i++)
+        g.drawLine(87,91+i*13,87,100+i*13);
+
+      g.fillOval(85,293,5,5);
+      g.fillOval(21,293,5,5);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(107,88,5,5);
+      g.fillOval(107,303,5,5);
+      g.fillOval(21,302,5,5);
+      g.drawString("f(    )",28,317);
+      for (i=0;i<=5;i++)
+        g.drawLine(25+i*14,305,32+i*14,305);
+      Ind_n1(g, "z","3",37,317);
+      Ind_n2(g, "z","3",105,83);
+      Ind_n2(g, "z","4",117,84);
+       for (i=0;i<=16;i++)
+        g.drawLine(109,89+i*13,109,98+i*13);
+      g.setColor(Color.black);
+       g.setFont(new java.awt.Font("SansSerif", 1, 10));
+      g.drawString("=",64,83);
+      g.drawString("=",100,83);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+       g.drawString(" Сравним   f(    )  c  f(    ) : ",40,365);
+      Ind_n(g, "y","2",132,365);
+      Ind_n(g, "z","2",187,365);
+      g.drawString("  f(    ) > f(    ),  положим         =    = 2,308,       =     = 3,846,       =     = 3,077, ",30,385);
+      Ind_n(g, "y","3",50,385);
+      Ind_n(g, "z","3",98,385);
+      Ind_n(g, "a","4",211,385);
+      Ind_n(g, "y","3",238,385);
+      Ind_n(g, "b","4",318,385);
+      Ind_n(g, "b","3",347,385);
+      Ind_n(g, "z","3",454,385);
+      Ind_n(g, "y","4",428,385);
+      g.drawString("     =     +         (     -     ) = 2,308 +      * (3,846 - 2,308) = 3,077 ",30,410);
+      Ind_n(g, "z","4",36,410);
+      Ind_n(g, "a", "4",62,410);
+      Ind_n(g, "F"," 6-5",95,400);
+      g.drawLine(93,404,105,404);
+      g.drawLine(93,405,105,405);
+      Ind_n(g, "F"," 6-4",95,418);
+      Ind_n(g, "b"," 4",128,410);
+      Ind_n(g, "a", "4",156,410);
+      g.drawString("1",250,403);
+      g.drawLine(248,404,259,404);
+      g.drawLine(248,405,259,405);
+      g.drawString("2",250,418);
+      }
+     if ((sh==6)&&(it==3)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(Color.red);
+      g.drawLine(86,89,130,89);
+      g.drawString("]",129,94);
+      g.drawString("[",86,94);
+      Ind_n1(g, "a","4",72,83);
+      Ind_n1(g, "b","4",132,83);
+      //paintArrow(g,324,136,338,150);
+           g.drawLine(326,131,345,150);
+            g.drawLine(326,132,345,151);
+            ///-----1------
+            g.drawLine(336,151,345,151);
+            g.drawLine(338,150,345,150);
+            g.drawLine(340,149,345,149);
+            ///-----2------
+            g.drawLine(345,141,345,151);
+            g.drawLine(344,143,344,151);
+            g.drawLine(343,146,343,151);
+      g.setFont(new java.awt.Font("SansSerif", 1, 12));
+      g.drawString("= 0,01 ",360,155);
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString("\u03B5",350,155);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      Ind_n1(g, "y","5",92,82);
+      g.fillOval(107,88,5,5);
+      for (i=0;i<=16;i++)
+        g.drawLine(109,89+i*13,109,98+i*13);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(110,88,5,5);
+      Ind_n1(g, "z","5",116,82);
+       for (i=0;i<=15;i++)
+        g.drawLine(111,95+i*13,111,104+i*13);
+      g.setFont(new java.awt.Font("SansSerif", 1, 12));
+      g.setColor(new Color(0, 114, 135));
+      g.drawString("\u03B5",108,86);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Проверим условие окончания     k = 3 = N - 3 = 3   и  ",40,365);
+      Ind_n(g, "L"," 5",30,385);
+      g.drawString(" = [ 2,308 ; 3,846 ] ,  тогда  положим       =     =     = 3,077",43,385);
+      g.drawString("  =     +     = 3,077 + 0,01 = 3,087",40,405);
+      Ind_n(g, "y","5",300,385);
+      Ind_n(g, "y","4",330,385);
+      Ind_n(g, "z","4",356,385);
+      Ind_n(g, "z","5",30,405);
+      Ind_n(g, "y","5",60,405);
+      g.drawString("\u03B5",90,405);
+    }
+     if ((sh==7)&&(it==3)){
+      g.setColor(Color.red);
+      g.setFont(new java.awt.Font("SansSerif", 3, 16));
+      g.drawString("\u2113",350,120);
+      g.setFont(new java.awt.Font("SansSerif", 1, 12));
+      g.drawString("= 1 ",360,120);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.drawLine(86,89,112,89);
+      g.drawString("]",111,94);
+      g.drawString("[",86,94);
+      Ind_n1(g, "a","5",53,83);
+      Ind_n1(g, "b","5",115,83);
+      //paintArrow(g,324,101,338,115);
+            g.drawLine(326,91,345,110);
+            g.drawLine(326,92,345,111);
+            ///-----1------
+            g.drawLine(336,111,345,111);
+            g.drawLine(338,110,345,110);
+            g.drawLine(340,109,345,109);
+            ///-----2------
+            g.drawLine(345,101,345,111);
+            g.drawLine(344,103,344,111);
+            g.drawLine(343,106,343,111);
+      g.setColor(new Color(180, 0, 60));
+      Ind_n1(g, "a","4",72,83);
+      g.setColor(new Color(0, 0, 203));
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+       g.fillOval(107,88,5,5);
+      g.fillOval(107,303,5,5);
+      g.fillOval(21,302,5,5);
+      g.drawString("f(    )",28,318);
+      for (i=0;i<=5;i++)
+        g.drawLine(25+i*14,305,32+i*14,305);
+      Ind_n1(g, "y","5",37,318);
+       Ind_n1(g, "y","5",94,83);
+      g.fillOval(107,88,5,5);
+      for (i=0;i<=16;i++)
+        g.drawLine(109,89+i*13,109,98+i*13);
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(new Color(170, 0, 183));
+      g.fillOval(109,88,5,5);
+      g.fillOval(109,301,5,5);
+      g.fillOval(21,300,5,5);
+      g.drawString("f(    )",28,295);
+      for (i=0;i<=5;i++)
+        g.drawLine(28+i*14,303,35+i*14,303);
+      Ind_n1(g, "z","5",37,295);
+      Ind_n1(g, "z","5",135,83);
+       for (i=0;i<=15;i++)
+        g.drawLine(111,95+i*13,111,104+i*13);
+      g.setColor(Color.black);
+      g.setFont(new java.awt.Font("SansSerif", 1, 11));
+      g.drawString("=",65,83);
+      g.drawString("=",128,83);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Вычислим    f(    ) = -17,9884;    f(    ) = -17,985  ",40,365);
+      Ind_n(g, "y","5",147,365);
+      Ind_n(g, "z", "5",272,365);
+      g.drawString("т. к.  f(    ) < f(    ),  то        =     = 2,308,        =     = 3,087,  поэтому ",30,385);
+      Ind_n(g, "y","5",74,385);
+      Ind_n(g, "z","5",122,385);
+      Ind_n(g, "a","5",184,385);
+      Ind_n(g, "a","4",210,385);
+      Ind_n(g, "b","5",295,385);
+      Ind_n(g, "z","5",325,385);
+      g.drawString("  = [ 2,308; 3,087 ] = 0,78 <     = 1 ",70,405);
+      Ind_v(g, "x"," *",30,405);
+      Ind_n(g, "L"," 6",58,405);
+      g.setFont(new java.awt.Font("SansSerif",3, 15));
+      g.drawString("\u2113 ",250,405);
+      g.setFont(new java.awt.Font("SansSerif",1, 11));
+      g.drawString("\u0404 ",47,404);
+    }
+    if ((sh==8)&&(it==3)){
+      g.setFont(new java.awt.Font("SansSerif", 1, 13));
+      g.setColor(Color.red);
+      g.drawLine(86,89,112,89);
+      g.drawString("]",111,94);
+      g.drawString("[",86,94);
+      Ind_n1(g, "a","5",72,83);
+      Ind_n1(g, "b","5",115,83);
+      g.fillOval(98,88,5,5);
+      g.fillOval(98,303,5,5);
+      for (i=0;i<=16;i++)
+        g.drawLine(100,89+i*13,100,98+i*13);
+      Ind_v(g, "x","*",96,85);
+      g.setColor(new Color(0, 0, 80));
+      g.setFont(new java.awt.Font("SansSerif", 1, 14));
+      g.drawString(" Заметим, что          = 0,078           =        = 0,077.  В  качестве",40,370);
+      Ind_n(g, "L"," 6",153,362);
+      Ind_n(g, "L"," 0",153,381);
+      g.drawString("1",250,363);
+      g.drawString("1",288,363);
+      g.drawString("13",285,379);
+      g.drawLine(149,368,168,368);
+      g.drawLine(149,367,168,367);
+      g.drawLine(150,352,150,365);
+      g.drawLine(170,352,170,365);
+      g.drawLine(150,371,150,384);
+      g.drawLine(170,371,170,384);
+      Ind_n(g, "F"," 6",250,379);
+      g.drawLine(246,366,260,366);
+      g.drawLine(246,365,260,365);
+      g.drawLine(282,366,300,366);
+      g.drawLine(282,365,300,365);
+      g.drawString("\u007E ",231,368);
+      g.drawString("\u003D ",231,373);
+      g.drawString("приближенного решения можно взять середину интервала",30,397);
+      Ind_n(g, "L"," 6",467,397);
+      g.setColor(Color.red);
+      g.drawString("   ( 2,308 + 3,087 ) / 2 = 2,697",50,422);
+      Ind_v(g, "x"," *",30,422);
+      g.drawString("\u007E ",48,420);
+      g.drawString("\u003D ",48,425);
+
+    }
+   }
+  }
+   void jButton3_actionPerformed(ActionEvent e) {
+    if (sh <=7) sh++;
+    if ((it ==3)&&(sh>7)) sh=8;
+    if ((sh >6)&&(it <3)) {
+      sh=3;
+      it++;
+      }
+    if (it >3) {it=3; sh=8;}
+    repaint();
+   }
+
+  void jButton1_actionPerformed(ActionEvent e) {
+    if ((it ==0)&&(sh<=4))   sh--;
+    if ((it ==0)&&(sh <=3)) sh=sh+1;
+    sh--;
+    if ((sh <3)&&(it !=0))
+     { sh=6;
+       it--;}
+    if(sh < 1) sh=1;
+    if (it < 0) it=0;
+     repaint();
+  }
+
+  void jButton2_actionPerformed(ActionEvent e) {
+    sh=1; it=0;
+    repaint();
+  }
+
+ /* void jPanel1_mouseMoved(MouseEvent e) {
+   jLabel2.setText(""+e.getX());jLabel3.setText(""+e.getY());
+  }*/
+}
